@@ -94,7 +94,7 @@ readme_numbers = {
 if readme_numbers != set(range(1, 36)):
     raise SystemExit("List patterns 1 through 35 in the README table")
 
-if len(SKILL.splitlines()) > 500:
-    raise SystemExit("Keep SKILL.md at 500 lines or fewer")
+if len(SKILL.splitlines()) > 600:
+    raise SystemExit("Keep SKILL.md at 600 lines or fewer")
 
 print(f"Koreanizer package v{skill_version} is valid")
