@@ -15,12 +15,15 @@ Keep the skill portable. Do not write instructions that limit it to one or two a
 - `.claude-plugin/plugin.json` describes the Claude plugin and points its skill loader at the root `SKILL.md`.
 - `.claude-plugin/marketplace.json` lets users add this repo as a Claude marketplace.
 - `scripts/validate-package.py` checks package files and shared values.
+- `scripts/pattern-snapshot.json` records each pattern's title and the groups
+  that hold it in `SKILL.md` and `README.md`.
 
 ## Rules for changes
 
 Keep `SKILL.md` and `README.md` in sync.
 
 - **Patterns:** The skill has 35 numbered patterns. If you add, remove, or renumber a pattern, update the README table, heading, validator, and every pattern reference.
+- **Snapshot:** Run `python3 scripts/validate-package.py --update-snapshot` after you change a pattern title or move a pattern between groups. Review the resulting diff; the validator does not update it for you.
 - **Version:** Keep the same version in `SKILL.md` under `metadata.version`, the first README version entry, and `.claude-plugin/plugin.json`. Do not add a top-level `version` field to the skill.
 - **Compatibility:** Keep install and use instructions neutral across agents. Names such as Claude Code, OpenCode, and Codex are examples, not limits.
 - **History:** Add a short README version note for any behavior change or non-obvious fix.

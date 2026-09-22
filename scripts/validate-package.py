@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 
@@ -93,6 +94,95 @@ readme_numbers = {
 }
 if readme_numbers != set(range(1, 36)):
     raise SystemExit("List patterns 1 through 35 in the README table")
+
+snapshot_path = ROOT / "scripts" / "pattern-snapshot.json"
+
+
+def skill_groups(text: str) -> dict[str, list[int]]:
+    groups: dict[str, list[int]] = {}
+    section = None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            section = line[3:].strip()
+        heading = re.match(r"^### ([0-9]+)\. ", line)
+        if heading and section:
+            groups.setdefault(section, []).append(int(heading.group(1)))
+    return groups
+
+
+def readme_groups(text: str) -> dict[str, list[int]]:
+    groups: dict[str, list[int]] = {}
+    section = None
+    for line in text.splitlines():
+        heading = re.match(r"^### (.+)$", line)
+        if heading:
+            section = heading.group(1).strip()
+            continue
+        row = re.match(r"^\| ([0-9]+) \|", line)
+        if row and section:
+            groups.setdefault(section, []).append(int(row.group(1)))
+    return groups
+
+
+skill_sections = skill_groups(SKILL)
+readme_sections = readme_groups(README)
+
+if "--update-snapshot" in sys.argv:
+    rebuilt = []
+    for name, numbers in skill_sections.items():
+        matches = [
+            group for group, rows in readme_sections.items() if rows == numbers
+        ]
+        if len(matches) != 1:
+            raise SystemExit(
+                f"Match one README group to SKILL.md section {name} first"
+            )
+        rebuilt.append({"skill": name, "readme": matches[0], "numbers": numbers})
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "groups": rebuilt,
+                "titles": {
+                    number: title
+                    for number, title in re.findall(
+                        r"(?m)^### ([0-9]+)\. (.+)$", SKILL
+                    )
+                },
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    print("Updated scripts/pattern-snapshot.json")
+    raise SystemExit(0)
+
+snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+declared: list[int] = []
+for group in snapshot["groups"]:
+    numbers = group["numbers"]
+    declared.extend(numbers)
+    if skill_sections.get(group["skill"]) != numbers:
+        raise SystemExit(
+            f"SKILL.md section {group['skill']} must hold patterns {numbers}"
+        )
+    if readme_sections.get(group["readme"]) != numbers:
+        raise SystemExit(
+            f"README.md group {group['readme']} must hold patterns {numbers}"
+        )
+if sorted(declared) != list(range(1, 36)):
+    raise SystemExit("Cover patterns 1 through 35 in scripts/pattern-snapshot.json")
+
+for number, title in snapshot["titles"].items():
+    if not re.search(rf"(?m)^### {re.escape(number)}\. {re.escape(title)}$", SKILL):
+        raise SystemExit(f"Pattern {number} must keep the title: {title}")
+
+out_of_range = sorted(
+    {int(number) for number in re.findall(r"([0-9]+)절", SKILL)} - set(range(1, 36))
+)
+if out_of_range:
+    raise SystemExit(f"SKILL.md refers to patterns that do not exist: {out_of_range}")
 
 if len(SKILL.splitlines()) > 600:
     raise SystemExit("Keep SKILL.md at 600 lines or fewer")
