@@ -27,6 +27,7 @@ Keep `SKILL.md` and `README.md` in sync.
 - **Version:** Keep the same version in `SKILL.md` under `metadata.version`, the first README version entry, and `.claude-plugin/plugin.json`. Do not add a top-level `version` field to the skill.
 - **Compatibility:** Keep install and use instructions neutral across agents. Names such as Claude Code, OpenCode, and Codex are examples, not limits.
 - **History:** Add a short README version note for any behavior change or non-obvious fix.
+- **After examples:** Agents copy the `**후**` examples. Do not put a comma after a connective ending in them; pattern 14 removes those commas. The validator fails on such a comma unless you add the line to `ALLOWED_AFTER_EXAMPLE_COMMAS`.
 - **Checks:** Before publishing, run `python3 scripts/validate-package.py`, `npx skills add . --list`, and `claude plugin validate .`.
 
 ## Writing style

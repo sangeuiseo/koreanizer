@@ -184,6 +184,32 @@ out_of_range = sorted(
 if out_of_range:
     raise SystemExit(f"SKILL.md refers to patterns that do not exist: {out_of_range}")
 
+# Pattern 14 removes commas after connective endings. Agents copy the after
+# examples, so those examples must not carry such a comma. Add a line here only
+# when the comma prevents a misreading or the regex catches a noun.
+ALLOWED_AFTER_EXAMPLE_COMMAS: set[str] = set()
+after_example_commas = []
+in_after_example = False
+for line in SKILL.splitlines():
+    if line.startswith("**후"):
+        in_after_example = True
+        continue
+    if not line.startswith(">"):
+        in_after_example = False
+        continue
+    prose = re.sub(r"`[^`]*`", "", line)
+    if (
+        in_after_example
+        and re.search(r"(?:고|며|데|지만|거나|므로|서|면),", prose)
+        and line not in ALLOWED_AFTER_EXAMPLE_COMMAS
+    ):
+        after_example_commas.append(line)
+if after_example_commas:
+    raise SystemExit(
+        "Remove the comma after the connective ending in these after examples: "
+        + " | ".join(after_example_commas)
+    )
+
 if len(SKILL.splitlines()) > 600:
     raise SystemExit("Keep SKILL.md at 600 lines or fewer")
 
