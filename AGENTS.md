@@ -34,7 +34,16 @@ Keep `SKILL.md` and `README.md` in sync.
 - **Version:** Keep the same version in `SKILL.md` under `metadata.version`, the first README version entry, and `.claude-plugin/plugin.json`. Do not add a top-level `version` field to the skill.
 - **Compatibility:** Keep install and use instructions neutral across agents. Names such as Claude Code, OpenCode, and Codex are examples, not limits.
 - **History:** Add a short README version note for any behavior change or non-obvious fix.
-- **Release:** Bump the version whenever `SKILL.md` or a `references/` file changes. Plugin users receive new content only when the version changes. After the bump reaches `main`, the release workflow creates the tag and the GitHub release from the README note. Do not create release tags by hand.
+- **Release:** Bump the version whenever `SKILL.md`, a `references/` file, or the plugin metadata in `.claude-plugin/` changes. Plugin users receive new content only when the version changes. Changes only to `README.md`, `AGENTS.md`, `scripts/`, or `.github/` need no bump.
+- **Bump size:** Pick the part to raise by what users notice. Raise one part per release and reset the parts after it to 0.
+
+  | Raise | When the change | Examples |
+  |---|---|---|
+  | Major (`2.0.0`) | makes users act or breaks how they use the skill | rename the skill or its command, change the install layout, remove a mode, change the output format that other tools read |
+  | Minor (`1.6.0`) | changes what the skill rewrites or keeps | add, replace, or remove a pattern, add a `references/` file, change a rule, a false-positive item, or the rewrite process |
+  | Patch (`1.5.1`) | keeps the behavior the same | fix wording, a typo, an example that breaks its own rule, a link, or plugin metadata |
+
+  If you cannot tell minor from patch, pick minor. State the chosen part and the reason in the pull request description. After the bump reaches `main`, the release workflow creates the tag and the GitHub release from the README note. Do not create release tags by hand.
 - **After examples:** Agents copy the `**후**` examples in `SKILL.md` and `references/`. Do not put a comma after a connective ending in them; pattern 14 removes those commas. The validator fails on such a comma unless you add the line to `ALLOWED_AFTER_EXAMPLE_COMMAS`.
 - **Checks:** Before publishing, run `python3 scripts/validate-package.py`, `npx skills add . --list`, and `claude plugin validate .`.
 
@@ -55,6 +64,17 @@ Use Plain Language in code comments, prompts, documentation, descriptions, valid
 - Keep the full technical meaning.
 
 Koreanizer's prompt is in Korean. When you edit `SKILL.md`, write the prompt in Korean. Keep identifiers, commands, paths, and pattern numbers exact. Do not translate watched phrases into English.
+
+## Korean text
+
+All Korean prose you write or change in this repo must go through Koreanizer before you commit it. This covers `README.md`, the release notes in its version list, files under `references/`, Korean sentences you add to `SKILL.md`, commit messages, and pull request descriptions.
+
+- Use this repo's own `SKILL.md` and `references/`, not an installed copy. An installed copy may be an older version.
+- Use file mode for files and embedded mode for commit messages and pull request descriptions.
+- Have a separate agent or a fresh session apply it, so the writer does not review their own text. Review its diff before you commit.
+- Keep code, identifiers, quoted examples, and the `**전**` examples as they are.
+- `README.md`, its release notes, and pull request descriptions use 합니다체. `SKILL.md`, `references/`, and commit messages use 한다체.
+- The validator checks only mechanical tells in README prose: dashes and commas after connective endings. Passing it does not show that the text went through Koreanizer.
 
 ## Editing the skill
 

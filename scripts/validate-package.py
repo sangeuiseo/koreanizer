@@ -292,5 +292,30 @@ check(
 # Agents load SKILL.md whole on every run. Put situational rules in references/.
 check(len(SKILL.splitlines()) <= 500, "Keep SKILL.md at 500 lines or fewer")
 
+# AGENTS.md asks agents to run Koreanizer on README prose and release notes.
+# This catches only the mechanical tells that pattern 14 removes. Code, quotes,
+# tables, and HTML lines hold examples on purpose, so they are skipped.
+README_PROSE_COMMA = re.compile(
+    r"(?:으며|하며|되며|이며|는데|지만|거나|므로|면서|으면|하면|되면|다면|라면"
+    r"|해서|하고|되고|했고|었고|았고|있고|없고|이고|지고|치고|주고|두고|쓰고"
+    r"|그리고|그러나|그런데|그러므로),"
+)
+readme_prose_problems = []
+in_code_block = False
+for line in README.splitlines():
+    if line.startswith("```"):
+        in_code_block = not in_code_block
+        continue
+    if in_code_block or line.startswith(("|", ">", "<", "**전", "**후")):
+        continue
+    prose = re.sub(r'`[^`]*`|"[^"]*"', "", line)
+    if re.search(r"[—–]", prose) or README_PROSE_COMMA.search(prose):
+        readme_prose_problems.append(line[:60])
+check(
+    not readme_prose_problems,
+    "Remove dashes and commas after connective endings from README prose: "
+    + " | ".join(readme_prose_problems),
+)
+
 exit_on_errors()
 print(f"Koreanizer package v{skill_version} is valid")
