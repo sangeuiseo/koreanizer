@@ -1,4 +1,4 @@
 interface:
   display_name: "Koreanizer"
-  short_description: "AI 한국어를 필자 문장으로 고친다"
+  short_description: "AI처럼 읽히는 한국어를 사람이 쓴 글로 고친다"
   default_prompt: "Use $koreanizer to rewrite this Korean text in my voice without changing its facts."

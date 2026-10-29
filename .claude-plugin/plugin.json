@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "koreanizer",
-  "description": "Rewrite AI-sounding Korean so it reads naturally without changing what it says.",
-  "version": "1.4.0",
+  "description": "AI처럼 읽히는 한국어를 뜻은 그대로 두고 사람이 쓴 글로 고친다.",
+  "version": "1.5.0",
   "author": {
     "name": "sangeuiseo",
     "url": "https://github.com/sangeuiseo"
