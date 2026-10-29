@@ -4,7 +4,7 @@
 
 **AI처럼 읽히는 한국어를 뜻은 그대로 두고 사람이 쓴 글로 고칩니다.**
 
-[![Release](https://img.shields.io/github/v/release/sangeuiseo/koreanizer)](https://github.com/sangeuiseo/koreanizer/releases) [![Check package](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml/badge.svg)](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml) [![License](https://img.shields.io/github/license/sangeuiseo/koreanizer)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/sangeuiseo/koreanizer)](https://github.com/sangeuiseo/koreanizer/releases) [![Check package](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml/badge.svg)](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml) [![License](https://img.shields.io/github/license/sangeuiseo/koreanizer?cacheSeconds=3600)](LICENSE)
 
 [설치](#설치) · [사용](#사용) · [동작](#동작) · [35개 패턴](#35개-패턴) · [기여](#기여)
 
