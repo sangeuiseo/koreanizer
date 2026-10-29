@@ -10,7 +10,7 @@
 
 </div>
 
-Claude Code나 Codex처럼 스킬을 읽는 에이전트에서 씁니다. 번역투, 광고 문장, 챗봇 말투와 한국어 LLM이 사람보다 자주 쓰는 표현을 찾아 고칩니다. 이미 자연스러운 문장은 그대로 둡니다.
+Claude Code나 Codex처럼 스킬을 읽는 에이전트에서 씁니다. 번역투, 광고 문장, 챗봇 말투, 한국어 LLM이 사람보다 자주 쓰는 표현을 찾아 고칩니다. 이미 자연스러운 문장은 그대로 둡니다.
 
 ```diff
 - 문제는 배포 주기가 길다는 것이다.
@@ -127,7 +127,9 @@ Skills CLI가 지원하는 모든 에이전트에 설치합니다. `--global`을
 
 Koreanizer는 없는 사실을 만들지 않습니다. 이름, 숫자, 날짜, 인용, 출처는 원문이나 필자에게서만 가져오고 빠진 내용이 필요하면 묻습니다. 이미 자연스러운 문장은 손대지 않습니다. 이 두 규칙이 35개 패턴보다 앞섭니다. 패턴은 예시라서 같은 버릇이면 목록에 없어도 고칩니다.
 
-기술 문서와 레퍼런스는 담담하게 둡니다. 입력에 따라 `SKILL.md` 앞쪽 표가 가리키는 규칙 파일을 더 읽고 여러 줄에 해당하면 모두 읽습니다.
+기술 문서와 레퍼런스는 담담하게 둡니다. 공지, 보고, 안내처럼 정보를 전하는 글은 요점을 앞에 두고 내용의 모양에 맞으면 목록이나 표로 정리합니다. 원문에 없던 제목이나 볼드는 보태지 않습니다.
+
+입력에 따라 `SKILL.md` 앞쪽 표가 가리키는 규칙 파일을 더 읽고 여러 줄에 해당하면 모두 읽습니다.
 
 | 입력 | 더 읽는 파일 | 하는 일 |
 |---|---|---|
@@ -229,19 +231,22 @@ PR 설명과 커밋 메시지는 바꾼 파일 목록으로 분량을 채우지 
 
 ## 출처
 
-규칙의 근거는 Wikipedia의 AI 글 징후 목록, 번역투 연구, 국립국어원 지침, 한국어 LLM 글과 사람 글을 비교한 측정입니다.
+규칙의 근거는 Wikipedia의 AI 글 징후 목록, 번역투 연구, 국립국어원 지침, 쉬운 글쓰기 지침, 한국어 LLM 글과 사람 글을 비교한 측정입니다.
 
 <details>
 <summary>출처 목록과 측정의 한계</summary>
 
 - [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). 언어와 상관없는 챗봇 말투와 서식 버릇의 근거입니다. LLM이 다음에 올 말을 통계로 골라 가장 흔한 쪽으로 기운다는 요지를 따릅니다.
 - 김도훈, [「영한 번역시 발생하는 번역투에 대한 고찰」](https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART001410360), 『통역과 번역』 11(2), 2009, 3~19쪽; 국립국어원 『쉬운 공문서 쓰기 길잡이』, 신문 언어 지침
-- 김순영, [「영한 번역에 나타난 번역투 문장」](https://www.korean.go.kr/nkview/nklife/2012_1/22_0105.pdf), 『새국어생활』 22(1), 2012, 67~79쪽. `-의` 붙은 조사, `~로부터`
-- 김한식, [「일한 번역에 나타난 번역투 문장」](https://www.korean.go.kr/nkview/nklife/2012_1/22_0106.pdf), 『새국어생활』 22(1), 2012, 81~98쪽. 한국 신문은 문장당 쉼표 0.36개, 일본 신문은 1.49개
+- 김순영, [「영한 번역에 나타난 번역투 문장」](https://www.korean.go.kr/nkview/nklife/2012_1/22_0105.pdf), 『새국어생활』 22(1), 2012, 67~79쪽. `-의` 붙은 조사와 `~로부터`의 근거입니다.
+- 김한식, [「일한 번역에 나타난 번역투 문장」](https://www.korean.go.kr/nkview/nklife/2012_1/22_0106.pdf), 『새국어생활』 22(1), 2012, 81~98쪽. 한국 신문은 문장당 쉼표를 0.36개 쓰고 일본 신문은 1.49개 씁니다.
 - 국립국어원 『문장 부호 해설』(2014) 제4항 쉼표
-- Microsoft, [Korean Localization Style Guide](https://download.microsoft.com/download/5/b/6/5b62389f-4e3b-4c77-bc18-94efba2fa7bb/kor-kor-StyleGuide.pdf). `동작 명사 + 수행·진행`을 동사로 펴는 규칙
+- 국립국어원 [『쉬운 공문서 쓰기 길잡이』](https://www.korean.go.kr/front/etcData/etcDataView.do?mn_id=46&etc_seq=700)(2022). 문장 호응, 생략된 서술어, 문단 하나에 주제 하나, 목록 도입 문장의 근거입니다.
+- [Federal Plain Language Guidelines](https://digital.gov/guides/plain-language/) (미국 연방 정부, 2011). 요점을 문단 앞에 두는 주제 문장, 목록, 이중 부정의 근거입니다.
+- Nielsen Norman Group, [7 Tips for Presenting Bulleted Lists in Digital Content](https://www.nngroup.com/articles/presenting-bulleted-lists/) (2017); Google [developer documentation style guide: Lists](https://developers.google.com/style/lists). 셋 이상일 때만 목록을 만들고 도입 문장을 두는 근거입니다.
+- Microsoft, [Korean Localization Style Guide](https://download.microsoft.com/download/5/b/6/5b62389f-4e3b-4c77-bc18-94efba2fa7bb/kor-kor-StyleGuide.pdf). `동작 명사 + 수행·진행`을 동사로 펴는 규칙의 근거입니다.
 - Park et al., [KatFishNet](https://aclanthology.org/2025.acl-long.1030.pdf) (ACL 2025); Park & Han, LREAD (2026); Lee, [An LLM-Associated Register Shift in Korean Journal Abstracts](https://arxiv.org/abs/2609.07447) (2026, working paper)
-- [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) (MIT)의 [실증 검증 노트](https://github.com/epoko77-ai/im-not-ai/blob/main/skills/humanize-korean/references/empirical-validation.md). 분열문, 결산 결말, 당위 결말, 생성형 은유, 범용 정책동사, 장문 결핍과 오탐 목록의 근거입니다. 영어 Humanizer의 12, 27, 33절은 한국어에서 AI와 사람 차이가 없거나 반대로 나와서 다른 버릇으로 바꿨습니다. 다만 이 측정은 그 저장소가 직접 한 것이고 AI 글과 사람 글이 60편씩입니다. 모델은 세 개, 장르는 논설·에세이·분석이고 기술 문서와 번역문은 재지 않았습니다.
+- [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) (MIT)의 [실증 검증 노트](https://github.com/epoko77-ai/im-not-ai/blob/main/skills/humanize-korean/references/empirical-validation.md). 분열문, 결산 결말, 당위 결말, 생성형 은유, 범용 정책동사, 장문 결핍과 오탐 목록의 근거입니다. 영어 Humanizer의 12, 27, 33절은 한국어에서 AI와 사람 차이가 없거나 반대로 나와서 다른 버릇으로 바꿨습니다. 다만 이 측정은 그 저장소가 직접 한 것이고 AI 글과 사람 글이 60편씩입니다. 모델은 세 개이고 장르는 논설·에세이·분석입니다. 기술 문서와 번역문은 재지 않았습니다.
 - 이오덕 『우리글 바로쓰기』는 밀도를 볼 때만 참고합니다. 모든 장르의 글을 이 책대로 고치지는 않습니다.
 
 </details>
@@ -255,6 +260,7 @@ PR 설명과 커밋 메시지는 바꾼 파일 목록으로 분량을 채우지 
 <details>
 <summary>릴리스 노트</summary>
 
+- **1.6.0** - 정보를 전하는 글을 읽기 쉽게 다듬는 절을 넣었습니다. 공지의 일시와 영향, 보고의 결론처럼 뒤에 묻힌 요점은 첫 문단으로 옮깁니다. 주어와 서술어의 호응을 맞추고 화제가 바뀌는 곳에서만 문장을 나눕니다. 대등한 항목이 셋 이상일 때만 목록을 만들고 "다음과 같다" 대신 항목을 묶는 도입 문장을 씁니다. 원문에 없던 제목과 볼드는 보태지 않습니다. 다시 쓰기 과정에 요점과 할 일을 바로 찾을 수 있는지 묻는 단계를 더했고 오탐 목록의 비슷한 항목을 합쳤습니다.
 - **1.5.0** - 기술 문서, 번역문, 소설 규칙을 `references/`의 파일로 나눴습니다. `SKILL.md` 앞쪽 표가 입력에 맞는 파일을 읽게 합니다. 실행할 때마다 읽는 `SKILL.md`는 34KB에서 28KB로 줄었습니다. 한국어에서 AI와 사람 차이가 없던 12, 27, 33절은 측정에서 차이가 확인된 버릇으로 바꿨습니다. 12절은 `~것은` 분열문, 27절은 결산 문장, 33절은 문단 끝마다 오는 당위 문장입니다. 7, 8, 9, 13, 23, 26절에는 생성형 은유, `동작 명사 + 수행`, `X를 넘어 Y`, 겹쳐 쓴 `~되고 있다`, `~로부터`, 뭉뚱그린 `강화·확대·개선`을 더했습니다. 오탐 목록에 자기 개입 표현과 사람 글에 더 흔한 형태를 넣었습니다. 플러그인 설명을 한국어로 바꿨습니다.
 - **1.4.0** - 14절은 연결어미와 문두 접속 부사 뒤 쉼표를 기본으로 지우고 돌려주기 전에 한 번 더 봅니다. 쉼표를 없애려고 문장을 나누지는 않습니다. 나열, 순서 어구, 대답, 삽입구의 쉼표는 이 규칙에서 다루지 않습니다. "후" 예시와 지시 본문에서 그 쉼표를 뺐고 검증기가 "후" 예시에 그 쉼표가 다시 들어오지 않게 막습니다. 16절은 일반 산문에서도 관계를 감춘 기호를 봅니다. 오탐 목록에 번역투 표지와 괄호, 긴 문장을 더했습니다. `~를 통해`는 한 글에 여러 번 겹칠 때만 줄이고 23절과 26절 예시에서는 뺐습니다.
 - **1.3.0** - 영어 문서를 옮길 때 나오는 번역투를 다루는 절을 넣었습니다. 무생물 주어, 복수 표지 `-들`, `당신`, 형식 주어 구문, 명사 앞에 길게 쌓은 관계절, 잦은 지시어, `-의` 연쇄, 현재완료 직역, 전치사를 받는 명사구를 봅니다. 기술 문서 모드는 PR 설명, 커밋 메시지, 코드 주석도 다룹니다.
@@ -266,7 +272,9 @@ PR 설명과 커밋 메시지는 바꾼 파일 목록으로 분량을 채우지 
 
 ## 기여
 
-스킬은 [`SKILL.md`](SKILL.md)와 [`references/`](references) 폴더로 이뤄져 있습니다. 에이전트는 실행할 때마다 `SKILL.md`를 처음부터 끝까지 읽습니다. 기술 문서, 번역문, 소설처럼 한 가지 입력에만 쓰는 규칙은 `references/`의 파일에 두고 `SKILL.md`의 표에서 그 파일을 가리킵니다. 패턴을 더하거나 고치면 이 README의 표와 `scripts/pattern-snapshot.json`도 맞춥니다. 함께 바꿔야 할 파일은 [AGENTS.md](AGENTS.md)에 있습니다.
+스킬은 [`SKILL.md`](SKILL.md)와 [`references/`](references) 폴더로 이뤄져 있습니다. 에이전트는 실행할 때마다 `SKILL.md`를 처음부터 끝까지 읽습니다. 기술 문서, 번역문, 소설처럼 한 가지 입력에만 쓰는 규칙은 `references/`의 파일에 두고 `SKILL.md`의 표에서 그 파일을 가리킵니다.
+
+패턴을 더하거나 고치면 이 README의 표와 `scripts/pattern-snapshot.json`도 맞춥니다. 함께 바꿔야 할 파일은 [AGENTS.md](AGENTS.md)에 있습니다.
 
 `SKILL.md`나 `references/`를 바꾸면 버전을 올리고 위 버전 기록에 한 줄을 더합니다. 버전이 그대로면 플러그인 사용자는 새 내용을 받지 못합니다. 버전을 올린 변경이 `main`에 합쳐지면 그 기록으로 `vX.Y.Z` 태그와 GitHub 릴리스가 만들어집니다.
 
