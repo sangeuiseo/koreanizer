@@ -15,6 +15,9 @@ SKILL = SKILL_PATH.read_text(encoding="utf-8")
 README = (ROOT / "README.md").read_text(encoding="utf-8")
 AGENTS = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 PLUGIN = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+MARKETPLACE = json.loads(
+    (ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8")
+)
 
 # Each check adds its message here, so one run reports every problem.
 errors: list[str] = []
@@ -61,6 +64,14 @@ skill_name = first_group(
 if skill_name is not None:
     check(skill_name == "koreanizer", "Set SKILL.md name to koreanizer")
 check(PLUGIN.get("name") == "koreanizer", "Set plugin.json name to koreanizer")
+marketplace_entries = [
+    entry for entry in MARKETPLACE.get("plugins", []) if entry.get("name") == "koreanizer"
+]
+check(
+    len(marketplace_entries) == 1
+    and marketplace_entries[0].get("description") == PLUGIN.get("description"),
+    "Use the plugin.json description for the koreanizer entry in marketplace.json",
+)
 
 skill_version = first_group(
     r'(?m)^\s+version:\s*["\']([^"\']+)["\']\s*$',

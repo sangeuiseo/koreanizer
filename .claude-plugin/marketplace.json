@@ -5,12 +5,12 @@
     "name": "sangeuiseo",
     "url": "https://github.com/sangeuiseo"
   },
-  "description": "Install Koreanizer as a Claude plugin.",
+  "description": "Koreanizer를 Claude 플러그인으로 설치한다.",
   "plugins": [
     {
       "name": "koreanizer",
       "source": "./",
-      "description": "Rewrite AI-sounding Korean so it reads naturally without changing what it says.",
+      "description": "AI처럼 읽히는 한국어를 뜻은 그대로 두고 사람이 쓴 글로 고친다.",
       "license": "MIT",
       "keywords": ["writing", "editing", "korean", "translationese", "humanize", "prose", "style"]
     }
