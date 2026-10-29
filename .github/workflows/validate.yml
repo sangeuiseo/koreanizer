@@ -25,5 +25,5 @@ jobs:
         run: npx --yes skills@1.5.20 add . --list
       - name: Check Claude marketplace
         run: |
-          npm install --global @anthropic-ai/claude-code
+          npm install --global @anthropic-ai/claude-code@2.1.312
           claude plugin validate .
