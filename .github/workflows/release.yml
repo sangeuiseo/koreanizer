@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Create a release for a new version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open(".claude-plugin/plugin.json"))["version"])')
+          if gh release view "v$version" > /dev/null 2>&1; then
+            echo "v$version already has a release"
+            exit 0
+          fi
+          python3 scripts/release-notes.py "$version" > release-notes.md
+          gh release create "v$version" --target "$GITHUB_SHA" --title "v$version" --notes-file release-notes.md

@@ -17,6 +17,10 @@ Keep the skill portable. Do not write instructions that limit it to one or two a
 - `scripts/validate-package.py` checks package files and shared values.
 - `scripts/pattern-snapshot.json` records each pattern's title and the groups
   that hold it in `SKILL.md` and `README.md`.
+- `scripts/release-notes.py` prints the release notes for one version from its README entry.
+- `.github/workflows/validate.yml` runs the checks on pull requests and on `main`.
+- `.github/workflows/release.yml` creates the `vX.Y.Z` tag and GitHub release when `main` has a version without a release.
+- `agents/openai.yaml` sets how Codex shows and invokes the skill.
 
 ## Rules for changes
 
@@ -27,6 +31,7 @@ Keep `SKILL.md` and `README.md` in sync.
 - **Version:** Keep the same version in `SKILL.md` under `metadata.version`, the first README version entry, and `.claude-plugin/plugin.json`. Do not add a top-level `version` field to the skill.
 - **Compatibility:** Keep install and use instructions neutral across agents. Names such as Claude Code, OpenCode, and Codex are examples, not limits.
 - **History:** Add a short README version note for any behavior change or non-obvious fix.
+- **Release:** Bump the version whenever `SKILL.md` changes. Plugin users receive new content only when the version changes. After the bump reaches `main`, the release workflow creates the tag and the GitHub release from the README note. Do not create release tags by hand.
 - **After examples:** Agents copy the `**후**` examples. Do not put a comma after a connective ending in them; pattern 14 removes those commas. The validator fails on such a comma unless you add the line to `ALLOWED_AFTER_EXAMPLE_COMMAS`.
 - **Checks:** Before publishing, run `python3 scripts/validate-package.py`, `npx skills add . --list`, and `claude plugin validate .`.
 
