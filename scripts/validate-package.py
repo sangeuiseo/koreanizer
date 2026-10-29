@@ -16,51 +16,82 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 AGENTS = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 PLUGIN = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
-
-def require_match(match: re.Match[str] | None, message: str) -> re.Match[str]:
-    if match is None:
-        raise SystemExit(message)
-    return match
+# Each check adds its message here, so one run reports every problem.
+errors: list[str] = []
 
 
-yaml_metadata = require_match(
-    re.match(r"\A---\n(.*?)\n---\n", SKILL, re.DOTALL),
-    "SKILL.md must begin with YAML metadata",
-).group(1)
+def check(ok: bool, message: str) -> None:
+    if not ok:
+        errors.append(message)
+
+
+def first_group(pattern: str, text: str, message: str, flags: int = 0) -> str | None:
+    match = re.search(pattern, text, flags)
+    check(match is not None, message)
+    return match.group(1) if match else None
+
+
+def exit_on_errors() -> None:
+    if errors:
+        print(f"Fix {len(errors)} problem(s) in the package files:", file=sys.stderr)
+        for message in errors:
+            print(f"- {message}", file=sys.stderr)
+        raise SystemExit(1)
+
+
+yaml_metadata = (
+    first_group(
+        r"\A---\n(.*?)\n---\n",
+        SKILL,
+        "SKILL.md must begin with YAML metadata",
+        re.DOTALL,
+    )
+    or ""
+)
 
 for unsupported_field in ("compatibility:", "allowed-tools:"):
-    if re.search(rf"(?m)^{re.escape(unsupported_field)}", yaml_metadata):
-        raise SystemExit(f"Remove unsupported YAML field: {unsupported_field[:-1]}")
-
-skill_name = require_match(
-    re.search(r"(?m)^name:\s*([a-z0-9-]+)\s*$", yaml_metadata),
-    "Add a lowercase name to SKILL.md",
-).group(1)
-if skill_name != "koreanizer":
-    raise SystemExit("Set SKILL.md name to koreanizer")
-if PLUGIN.get("name") != "koreanizer":
-    raise SystemExit("Set plugin.json name to koreanizer")
-
-skill_version = require_match(
-    re.search(r'(?m)^\s+version:\s*["\']([^"\']+)["\']\s*$', yaml_metadata),
-    "Add metadata.version to SKILL.md",
-).group(1)
-readme_version = require_match(
-    re.search(r"(?m)^- \*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*", README),
-    "Add a version entry to README.md",
-).group(1)
-
-package_versions = {skill_version, readme_version, str(PLUGIN.get("version", ""))}
-if len(package_versions) != 1:
-    raise SystemExit(
-        f"Use one package version in all files: {sorted(package_versions)}"
+    check(
+        not re.search(rf"(?m)^{re.escape(unsupported_field)}", yaml_metadata),
+        f"Remove unsupported YAML field: {unsupported_field[:-1]}",
     )
 
+skill_name = first_group(
+    r"(?m)^name:\s*([a-z0-9-]+)\s*$", yaml_metadata, "Add a lowercase name to SKILL.md"
+)
+if skill_name is not None:
+    check(skill_name == "koreanizer", "Set SKILL.md name to koreanizer")
+check(PLUGIN.get("name") == "koreanizer", "Set plugin.json name to koreanizer")
+
+skill_version = first_group(
+    r'(?m)^\s+version:\s*["\']([^"\']+)["\']\s*$',
+    yaml_metadata,
+    "Add metadata.version to SKILL.md",
+)
+readme_version = first_group(
+    r"(?m)^- \*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*",
+    README,
+    "Add a version entry to README.md",
+)
+
+package_versions = {
+    version
+    for version in (skill_version, readme_version, str(PLUGIN.get("version", "")))
+    if version is not None
+}
+check(
+    len(package_versions) == 1,
+    f"Use one package version in all files: {sorted(package_versions)}",
+)
+
 skill_files = {path.relative_to(ROOT) for path in ROOT.rglob("SKILL.md")}
-if SKILL_PATH.is_symlink() or skill_files != {Path("SKILL.md")}:
-    raise SystemExit("Keep one regular SKILL.md at the repo root")
-if PLUGIN.get("skills") != ["./"]:
-    raise SystemExit("Point the Claude plugin skill loader at the repo root")
+check(
+    not SKILL_PATH.is_symlink() and skill_files == {Path("SKILL.md")},
+    "Keep one regular SKILL.md at the repo root",
+)
+check(
+    PLUGIN.get("skills") == ["./"],
+    "Point the Claude plugin skill loader at the repo root",
+)
 
 plain_language_rules = (
     "## Writing style",
@@ -73,27 +104,33 @@ plain_language_rules = (
 missing_plain_language_rules = [
     rule for rule in plain_language_rules if rule not in AGENTS
 ]
-if missing_plain_language_rules:
-    raise SystemExit(
-        "Add the missing Plain Language rules to AGENTS.md: "
-        + ", ".join(missing_plain_language_rules)
-    )
+check(
+    not missing_plain_language_rules,
+    "Add the missing Plain Language rules to AGENTS.md: "
+    + ", ".join(missing_plain_language_rules),
+)
 
-if "fiction mode" not in SKILL.lower() and "소설 모드" not in SKILL:
-    raise SystemExit("Keep a fiction mode section in SKILL.md")
+check(
+    "fiction mode" in SKILL.lower() or "소설 모드" in SKILL,
+    "Keep a fiction mode section in SKILL.md",
+)
 
 pattern_numbers = [
     int(number)
     for number in re.findall(r"(?m)^### ([0-9]+)\. ", SKILL)
 ]
-if pattern_numbers != list(range(1, 36)):
-    raise SystemExit(f"Number SKILL.md patterns from 1 through 35: {pattern_numbers}")
+check(
+    pattern_numbers == list(range(1, 36)),
+    f"Number SKILL.md patterns from 1 through 35: {pattern_numbers}",
+)
 
 readme_numbers = {
     int(number) for number in re.findall(r"(?m)^\| ([0-9]+) \|", README)
 }
-if readme_numbers != set(range(1, 36)):
-    raise SystemExit("List patterns 1 through 35 in the README table")
+check(
+    readme_numbers == set(range(1, 36)),
+    "List patterns 1 through 35 in the README table",
+)
 
 snapshot_path = ROOT / "scripts" / "pattern-snapshot.json"
 
@@ -128,16 +165,19 @@ skill_sections = skill_groups(SKILL)
 readme_sections = readme_groups(README)
 
 if "--update-snapshot" in sys.argv:
+    exit_on_errors()
     rebuilt = []
     for name, numbers in skill_sections.items():
         matches = [
             group for group, rows in readme_sections.items() if rows == numbers
         ]
-        if len(matches) != 1:
-            raise SystemExit(
-                f"Match one README group to SKILL.md section {name} first"
-            )
-        rebuilt.append({"skill": name, "readme": matches[0], "numbers": numbers})
+        check(
+            len(matches) == 1,
+            f"Match one README group to SKILL.md section {name} first",
+        )
+        if len(matches) == 1:
+            rebuilt.append({"skill": name, "readme": matches[0], "numbers": numbers})
+    exit_on_errors()
     snapshot_path.write_text(
         json.dumps(
             {
@@ -163,30 +203,38 @@ declared: list[int] = []
 for group in snapshot["groups"]:
     numbers = group["numbers"]
     declared.extend(numbers)
-    if skill_sections.get(group["skill"]) != numbers:
-        raise SystemExit(
-            f"SKILL.md section {group['skill']} must hold patterns {numbers}"
-        )
-    if readme_sections.get(group["readme"]) != numbers:
-        raise SystemExit(
-            f"README.md group {group['readme']} must hold patterns {numbers}"
-        )
-if sorted(declared) != list(range(1, 36)):
-    raise SystemExit("Cover patterns 1 through 35 in scripts/pattern-snapshot.json")
+    check(
+        skill_sections.get(group["skill"]) == numbers,
+        f"SKILL.md section {group['skill']} must hold patterns {numbers}",
+    )
+    check(
+        readme_sections.get(group["readme"]) == numbers,
+        f"README.md group {group['readme']} must hold patterns {numbers}",
+    )
+check(
+    sorted(declared) == list(range(1, 36)),
+    "Cover patterns 1 through 35 in scripts/pattern-snapshot.json",
+)
 
 for number, title in snapshot["titles"].items():
-    if not re.search(rf"(?m)^### {re.escape(number)}\. {re.escape(title)}$", SKILL):
-        raise SystemExit(f"Pattern {number} must keep the title: {title}")
+    check(
+        bool(re.search(rf"(?m)^### {re.escape(number)}\. {re.escape(title)}$", SKILL)),
+        f"Pattern {number} must keep the title: {title}",
+    )
 
 out_of_range = sorted(
     {int(number) for number in re.findall(r"([0-9]+)절", SKILL)} - set(range(1, 36))
 )
-if out_of_range:
-    raise SystemExit(f"SKILL.md refers to patterns that do not exist: {out_of_range}")
+check(
+    not out_of_range,
+    f"SKILL.md refers to patterns that do not exist: {out_of_range}",
+)
 
-# Pattern 14 removes commas after connective endings. Agents copy the after
-# examples, so those examples must not carry such a comma. Add a line here only
-# when the comma prevents a misreading or the regex catches a noun.
+# Pattern 14 removes commas after connective endings and sentence-initial
+# conjunctions. Agents copy the after examples, so those examples must not carry
+# such a comma. The ending list also catches 그리고, 그런데, and 그러므로; 그러나
+# needs its own entry. Add a line here only when the comma prevents a misreading
+# or the regex catches a noun.
 ALLOWED_AFTER_EXAMPLE_COMMAS: set[str] = set()
 after_example_commas = []
 in_after_example = False
@@ -200,17 +248,17 @@ for line in SKILL.splitlines():
     prose = re.sub(r"`[^`]*`", "", line)
     if (
         in_after_example
-        and re.search(r"(?:고|며|데|지만|거나|므로|서|면),", prose)
+        and re.search(r"(?:고|며|데|지만|거나|므로|서|면|그러나),", prose)
         and line not in ALLOWED_AFTER_EXAMPLE_COMMAS
     ):
         after_example_commas.append(line)
-if after_example_commas:
-    raise SystemExit(
-        "Remove the comma after the connective ending in these after examples: "
-        + " | ".join(after_example_commas)
-    )
+check(
+    not after_example_commas,
+    "Remove the comma after the connective ending or conjunction in these after "
+    "examples: " + " | ".join(after_example_commas),
+)
 
-if len(SKILL.splitlines()) > 600:
-    raise SystemExit("Keep SKILL.md at 600 lines or fewer")
+check(len(SKILL.splitlines()) <= 600, "Keep SKILL.md at 600 lines or fewer")
 
+exit_on_errors()
 print(f"Koreanizer package v{skill_version} is valid")
