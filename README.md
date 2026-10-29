@@ -1,6 +1,33 @@
+<div align="center">
+
 # Koreanizer
 
-Koreanizer는 AI처럼 읽히는 한국어를 사람이 쓴 글로 고친다. 뜻은 바꾸지 않고 없는 사실을 보태지 않는다. Markdown 파일로 된 스킬이라서 스킬을 읽는 에이전트면 어디서나 쓸 수 있다.
+**AI처럼 읽히는 한국어를 뜻은 그대로 두고 사람이 쓴 글로 고친다.**
+
+[![Release](https://img.shields.io/github/v/release/sangeuiseo/koreanizer)](https://github.com/sangeuiseo/koreanizer/releases) [![Check package](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml/badge.svg)](https://github.com/sangeuiseo/koreanizer/actions/workflows/validate.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+[설치](#설치) · [사용](#사용) · [동작](#동작) · [35개 패턴](#35개-패턴) · [기여](#기여)
+
+</div>
+
+Claude Code나 Codex처럼 스킬을 읽는 에이전트에서 쓴다. 번역투, 광고 문장, 챗봇 말투, 한국어 LLM이 사람보다 자주 쓰는 표현을 찾아 고치고 이미 자연스러운 문장은 그대로 둔다.
+
+```diff
+- 문제는 배포 주기가 길다는 것이다.
++ 배포 주기가 길다.
+
+- 매뉴얼은 운영팀에 의해 작성되어지며, 내부 조율이 이루어졌다.
++ 운영팀이 매뉴얼을 썼고 내부에서 조율했다.
+
+- 이 설정은 캐시를 비활성화하는 것을 허용한다.
++ 이 설정으로 캐시를 끌 수 있다.
+
+- 배포 주기를 2주로 줄였다. 결국 속도가 경쟁력이다. 자동화가 중요한 이유다.
++ 배포 주기를 2주로 줄였다.
+```
+
+<details>
+<summary>긴 예 보기: 여행기 한 편</summary>
 
 **전 (AI 문장):**
 > 지난주 부산에서 보낸 닷새는 잊지 못할 여정이었습니다. 도착하는 순간, 이곳이 얼마나 특별한 도시인지 깨달았습니다.
@@ -16,9 +43,9 @@ Koreanizer는 AI처럼 읽히는 한국어를 사람이 쓴 글로 고친다. �
 
 달, 동네처럼 원문에 없는 세부는 필자에게 묻는다. 없으면 만들지 않는다.
 
-## 설치
+</details>
 
-설치하면 `/koreanizer`로 부른다. 설치 방법에 따라 명령이 달라지면 그 절에 적었다.
+## 설치
 
 ### Claude Code
 
@@ -27,69 +54,62 @@ Koreanizer는 AI처럼 읽히는 한국어를 사람이 쓴 글로 고친다. �
 /plugin install koreanizer@koreanizer
 ```
 
-플러그인으로 설치하면 `/koreanizer:koreanizer`로 부른다. Claude Code 2.1.142 이상이 필요하다. 그보다 낮은 버전이거나 `/koreanizer`로 부르고 싶으면 Skills CLI로 설치한다.
+`/koreanizer:koreanizer`로 부른다. Claude Code 2.1.142 이상이 필요하다.
 
-```bash
-npx skills add sangeuiseo/koreanizer --global --agent claude-code
-```
+> [!TIP]
+> `/plugin`의 **Marketplaces**에서 koreanizer를 고르고 **Enable auto-update**를 켜면 새 버전을 저절로 받는다. 켜지 않았으면 `/plugin marketplace update koreanizer`로 받는다.
 
-### Codex
+<details>
+<summary>Codex</summary>
 
 ```bash
 npx skills add sangeuiseo/koreanizer --global --agent codex
 ```
 
-Codex에서는 `$koreanizer`로 부른다.
+`$koreanizer`로 부른다.
 
-### Claude.ai와 Claude Desktop
+</details>
 
-이 저장소를 ZIP으로 받아(**Code → Download ZIP**) 설정에서 스킬로 올린다.
+<details>
+<summary>Claude.ai와 Claude Desktop</summary>
 
-### 그 밖의 에이전트
+이 저장소를 ZIP으로 받아(**Code → Download ZIP**) 설정에서 스킬로 올린다. 새 버전이 나오면 다시 받아 올린다.
+
+</details>
+
+<details>
+<summary>그 밖의 에이전트와 직접 설치</summary>
 
 ```bash
 npx skills add sangeuiseo/koreanizer --global --agent '*'
 ```
 
-Skills CLI가 지원하는 에이전트 모두에 설치한다. 위 명령에서 `--global`을 빼면 현재 프로젝트에만 설치한다. 설치한 스킬이 바로 보이지 않으면 에이전트에서 새 세션을 연다.
+Skills CLI가 지원하는 에이전트 모두에 설치한다. `--global`을 빼면 현재 프로젝트에만 설치한다. 스킬이 바로 보이지 않으면 에이전트에서 새 세션을 연다. Claude Code가 2.1.142보다 낮으면 `--agent claude-code`로 설치하고 `/koreanizer`로 부른다.
 
 손으로 설치할 때는 에이전트의 스킬 폴더 아래에 `koreanizer` 폴더를 만들고 그 안에 `SKILL.md`와 `references/` 폴더를 넣는다. `references/`가 없으면 기술 문서, 번역문, 소설 규칙이 빠진다. Claude Code의 개인 스킬이라면 `~/.claude/skills/koreanizer/SKILL.md`가 된다.
 
+</details>
+
 ## 사용
 
-아래 예시는 `/koreanizer`로 부른다. 플러그인으로 설치했으면 `/koreanizer:koreanizer`로 바꾸고 Codex에서는 `$koreanizer`로 바꾼다.
+| 하고 싶은 일 | 이렇게 말한다 |
+|---|---|
+| 붙여 넣은 글 고치기 | `/koreanizer`를 쓰고 다음 줄에 글을 붙여 넣는다 |
+| 평문으로 부탁하기 | `이 글의 AI 티를 걷어 줘: [글]` |
+| 파일 고치기 | `docs/launch-post.md 산문을 koreanize해 줘` |
+| PR 설명이나 커밋 메시지 고치기 | `방금 쓴 PR 설명을 koreanize해 줘` |
 
-스킬을 직접 부른다.
+명령 이름은 설치한 방법에 맞게 `/koreanizer:koreanizer`나 `$koreanizer`로 바꾼다.
 
-```
-/koreanizer
+| 맡긴 것 | 돌려받는 것 |
+|---|---|
+| 붙여 넣은 글 | 초안, 남은 AI 버릇 목록, 최종본 |
+| 파일 | 산문만 고친 파일과 짧은 요약. 코드, 데이터, 프론트매터, 링크 대상은 그대로 둔다 |
+| 다른 작업이 부른 경우 | 최종본만 |
 
-[고칠 글을 붙여 넣는다]
-```
+### 내 문체에 맞추기
 
-평문으로 요청해도 된다.
-
-```
-이 글의 AI 티를 걷어 줘: [글]
-```
-
-파일을 고치려면 경로를 준다.
-
-```
-docs/launch-post.md 산문을 koreanize해 줘
-```
-
-PR 설명, 커밋 메시지, 코드 주석도 같은 방법으로 맡긴다.
-
-```
-방금 쓴 PR 설명을 koreanize해 줘
-```
-
-붙여 넣은 글에는 초안, 남은 AI 패턴, 최종본을 돌려준다. 파일을 주면 산문만 고쳐 쓰고 짧은 요약을 준다. 다른 작업이 이 스킬을 끌어 쓰면 최종본만 돌려준다.
-
-### 목소리 맞추기
-
-자신의 글을 샘플로 붙인다.
+자기 글을 샘플로 붙이면 기본 문체 규칙보다 샘플을 따른다. 호흡과 단어, 종결어미, 해요체인지 합니다체인지, 고의로 남긴 버릇까지 맞춘다.
 
 ```
 /koreanizer
@@ -101,17 +121,14 @@ PR 설명, 커밋 메시지, 코드 주석도 같은 방법으로 맡긴다.
 [AI 글]
 ```
 
-샘플의 호흡과 단어, 종결어미, 해요체인지 합니다체인지, 고의로 남긴 버릇을 따른다.
-
 ## 동작
 
-번호 패턴 35개는 예시이다. 같은 버릇이면 목록에 없어도 고치고 이미 자연스러운 구절은 그대로 둔다. 언어와 상관없는 챗봇 말투와 서식 버릇은 Wikipedia의 ["Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)을 따른다. 한국어 문법 버릇은 번역투 연구, 국립국어원 문장 지침, 한국어 LLM 글을 사람 글과 견준 측정을 따른다.
+Koreanizer가 먼저 지키는 규칙은 두 개다.
 
-없는 사실을 만들지 않는다. 이름, 숫자, 날짜, 인용, 출처는 원문이나 필자에게서만 온다. 기술 문서와 레퍼런스는 담담하게 둔다. 샘플을 주면 기본 문체 규칙보다 샘플을 따른다.
+1. 없는 사실을 만들지 않는다. 이름, 숫자, 날짜, 인용, 출처는 원문이나 필자에게서만 온다. 빠진 내용이 필요하면 묻는다.
+2. 이미 자연스러운 문장은 손대지 않는다. 35개 패턴은 예시라서 같은 버릇이면 목록에 없어도 고친다.
 
-파일을 고칠 때는 산문만 고친다. 코드, 데이터, 프론트매터, 링크 대상은 그대로 둔다.
-
-입력에 따라 규칙 파일을 더 읽는다. 어떤 파일을 읽을지는 `SKILL.md` 앞쪽의 표가 정하고 여럿에 해당하면 모두 읽는다. 영어로 된 API 문서를 옮긴 글이면 아래 두 파일을 함께 읽는다.
+기술 문서와 레퍼런스는 담담하게 둔다. 입력에 따라 규칙 파일을 더 읽는다. 어떤 파일을 읽을지는 `SKILL.md` 앞쪽의 표가 정하고 여럿에 해당하면 모두 읽는다.
 
 | 입력 | 더 읽는 파일 | 하는 일 |
 |---|---|---|
@@ -122,6 +139,19 @@ PR 설명, 커밋 메시지, 코드 주석도 같은 방법으로 맡긴다.
 `SKILL.md`만 늘 읽고 나머지는 필요할 때만 읽어서 한 번 실행에 드는 분량을 줄인다.
 
 ## 35개 패턴
+
+[im-not-ai의 측정](https://github.com/epoko77-ai/im-not-ai/blob/main/skills/humanize-korean/references/empirical-validation.md)에서 사람 글보다 AI 글에 훨씬 많았던 버릇은 이렇다.
+
+| 버릇 | 전 | 후 |
+|---|---|---|
+| 부정 대구 (9절) | "단순한 도구가 아니라 팀의 언어다" | "팀은 이 도구로 용어를 맞춘다" |
+| `~것은` 분열문 (12절) | "문제는 배포 주기가 길다는 것이다" | "배포 주기가 길다" |
+| 연결어미 뒤 쉼표 (14절) | "정리하며, 다음으로 넘어간다" | "정리하고 다음으로 넘어간다" |
+| 결산 문장 (27절) | "결국 속도가 경쟁력이다" | 마지막 사실에서 끝낸다 |
+| 당위로 닫는 문단 (33절) | 문단마다 "~해야 한다" | 둘째부터 근거와 잇는다 |
+
+<details>
+<summary>35개 패턴 전체 보기</summary>
 
 표는 요약이다. 패턴마다 감시 어휘와 전/후 예시는 [`SKILL.md`](SKILL.md)에 있다.
 
@@ -190,7 +220,14 @@ PR 설명, 커밋 메시지, 코드 주석도 같은 방법으로 맡긴다.
 | 34 | **없는 반론** | "오해하지 마세요, ~이 아닙니다" | 방어를 빼고 실제 주장만 |
 | 35 | **가짜 대안 기각** | "유혹적인 방법은... 하지만" | 가짜 안을 빼고 실제 선택만 |
 
+</details>
+
 ## 출처
+
+규칙은 Wikipedia의 AI 글 징후 목록, 번역투 연구, 국립국어원 지침, 한국어 LLM 글을 사람 글과 견준 측정에 기댄다.
+
+<details>
+<summary>출처 목록과 측정의 한계</summary>
 
 - [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). 언어와 상관없는 챗봇 말투와 서식 버릇의 근거다. LLM은 다음에 올 말을 통계로 골라 가장 흔한 쪽으로 기운다는 요지를 따른다.
 - 김도훈, [「영한 번역시 발생하는 번역투에 대한 고찰」](https://www.kci.go.kr/kciportal/landing/article.kci?arti_id=ART001410360), 『통역과 번역』 11(2), 2009, 3~19쪽; 국립국어원 『쉬운 공문서 쓰기 길잡이』, 신문 언어 지침
@@ -201,6 +238,8 @@ PR 설명, 커밋 메시지, 코드 주석도 같은 방법으로 맡긴다.
 - Park et al., [KatFishNet](https://aclanthology.org/2025.acl-long.1030.pdf) (ACL 2025); Park & Han, LREAD (2026); Lee, [An LLM-Associated Register Shift in Korean Journal Abstracts](https://arxiv.org/abs/2609.07447) (2026, working paper)
 - [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) (MIT)의 [실증 검증 노트](https://github.com/epoko77-ai/im-not-ai/blob/main/skills/humanize-korean/references/empirical-validation.md). 분열문, 결산 결말, 당위 결말, 생성형 은유, 범용 정책동사, 장문 결핍과 오탐 목록의 근거다. 영어 Humanizer의 12, 27, 33절은 한국어에서 AI와 사람 차이가 없거나 반대로 나와서 다른 버릇으로 바꿨다. 이 측정에는 한계가 있다. 그 저장소가 직접 잰 것이고 AI 글과 사람 글이 각 60편이다. 모델은 세 개, 장르는 논설·에세이·분석이며 기술 문서와 번역문은 재지 않았다.
 - 이오덕 『우리글 바로쓰기』는 밀도를 볼 때만 참고한다. 모든 장르에 순화 처방으로 쓰지 않는다.
+
+</details>
 
 이 저장소는 [Humanizer](https://github.com/blader/humanizer)의 포크다. Humanizer 2.11.2에서는 제품 골격을 가져왔다. 없는 사실을 만들지 않는 규칙, 샘플을 먼저 따르는 규칙, 세 가지 출력 모드, 오탐 절이다. 영어 문법 조항은 번역투, 종결어미, 연결어미 뒤 쉼표 규칙으로 다시 썼다.
 
