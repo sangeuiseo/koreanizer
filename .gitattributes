@@ -1,0 +1,3 @@
+# Count Markdown in the GitHub language bar. SKILL.md is the product, and
+# without this line the bar shows only the Python validator.
+*.md linguist-detectable

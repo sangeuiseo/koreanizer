@@ -196,6 +196,8 @@ PR 설명, 커밋 메시지, 코드 주석은 기술 문서 모드가 받는다.
 
 ## 버전
 
+버전마다 [GitHub 릴리스](https://github.com/sangeuiseo/koreanizer/releases)가 있다. 릴리스 노트는 아래 기록과 같다.
+
 <details>
 <summary>릴리스 노트</summary>
 
@@ -210,6 +212,8 @@ PR 설명, 커밋 메시지, 코드 주석은 기술 문서 모드가 받는다.
 ## 기여
 
 제품은 [`SKILL.md`](SKILL.md)다. 패턴을 더하거나 고치면 이 README의 표와 `scripts/pattern-snapshot.json`도 맞춘다. 무엇을 함께 바꿔야 하는지는 [AGENTS.md](AGENTS.md)에 있다.
+
+`SKILL.md`를 바꾸면 버전을 올리고 위 버전 기록에 한 줄을 더한다. 버전이 그대로면 플러그인 사용자는 새 내용을 받지 못한다. 버전을 올린 변경이 `main`에 합쳐지면 `vX.Y.Z` 태그와 GitHub 릴리스가 그 기록으로 만들어진다.
 
 PR을 올리기 전에 아래 세 검사를 돌린다. CI도 같은 검사를 돌린다.
 
